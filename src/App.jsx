@@ -25,7 +25,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://wound-sensor-6pkoirhrnq-el.a.run.app",
+        "https://wound-sensor-6pkoirhrnq-el.a.run.app/upload",
         {
           method: "POST",
           body: formData,
@@ -36,7 +36,7 @@ function App() {
 
       const botMessage = {
         sender: "bot",
-        content: `Estimated Wound Area: ${res.data.area}`,
+        content: `Estimated Wound Area: ${data.area}`,
       };
       setMessages([...messages, userMessage, botMessage]);
     } catch (error) {
