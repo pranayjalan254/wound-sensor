@@ -25,7 +25,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://wound-area-estimator-xyz.a.run.app/upload",
+        "https://wound-sensor-6pkoirhrnq-el.a.run.app",
         {
           method: "POST",
           body: formData,
