@@ -24,15 +24,15 @@ function App() {
     setMessages([...messages, userMessage]);
 
     try {
-      const res = await axios.post(
-        "http://127.0.0.1:5000/api/upload",
-        formData,
+      const response = await fetch(
+        "https://wound-area-estimator-xyz.a.run.app/upload",
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          method: "POST",
+          body: formData,
         }
       );
+      const data = await response.json();
+      console.log("Upload success:", data);
 
       const botMessage = {
         sender: "bot",
@@ -40,7 +40,7 @@ function App() {
       };
       setMessages([...messages, userMessage, botMessage]);
     } catch (error) {
-      console.error("Error uploading the image:", error);
+      console.error("Error uploading image:", error);
       const errorMessage = {
         sender: "bot",
         content: "Error uploading the image",
