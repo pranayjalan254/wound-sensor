@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import "./App.css";
 import { storage } from "./config/firebase";
 import { ref, uploadBytes } from "firebase/storage";
@@ -10,7 +9,13 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setSelectedFile(file);
+    } else {
+      alert("Please select an image file.");
+      setSelectedFile(null);
+    }
   };
 
   const handleUpload = async () => {
@@ -54,7 +59,7 @@ function App() {
           ))}
           {loading && <div className="chat-message bot">Loading...</div>}
         </div>
-        <input type="file" onChange={handleFileChange} />
+        <input type="file" accept="image/*" onChange={handleFileChange} />
         <button onClick={handleUpload}>Upload</button>
       </header>
     </div>
