@@ -40,7 +40,7 @@ function App() {
       setMessages((prevMessages) => [...prevMessages, botMessage]);
 
       // Send the image URL to the Flask backend
-      const response = await axios.post("http://127.0.0.1:5000/predict", {
+      const response = await axios.post("http://127.0.0.1:5000/", {
         imageUrl: downloadURL,
       });
 
