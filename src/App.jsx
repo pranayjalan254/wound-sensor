@@ -38,7 +38,7 @@ function App() {
 
       // Send the image file to the Flask backend
       const response = await axios.post(
-        "http://127.0.0.1:5000/upload",
+        "http://127.0.0.1:5000/predict",
         formData,
         {
           headers: {
