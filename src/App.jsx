@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
 import { storage } from "./config/firebase";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import axios from "axios";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,18 +31,34 @@ function App() {
 
     try {
       await uploadBytes(filesFolderRef, selectedFile);
+      const downloadURL = await getDownloadURL(filesFolderRef);
+
       const botMessage = {
         sender: "bot",
-        content: `Upload successful`,
+        content: `Upload successful. Processing the image...`,
       };
-      setMessages([...messages, userMessage, botMessage]);
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+      // Send the image URL to the Flask backend
+      const response = await axios.post("http://127.0.0.1:5000/predict", {
+        imageUrl: downloadURL,
+      });
+
+      const results = response.data;
+      const resultMessage = {
+        sender: "bot",
+        content: `Wound Area: ${results.areas.join(
+          ", "
+        )} cm²\nScores: ${results.scores.join(", ")}`,
+      };
+      setMessages((prevMessages) => [...prevMessages, resultMessage]);
     } catch (error) {
-      console.error("Error uploading the image:", error);
+      console.error("Error processing the image:", error);
       const errorMessage = {
         sender: "bot",
-        content: "Error uploading the image",
+        content: "Error processing the image",
       };
-      setMessages([...messages, userMessage, errorMessage]);
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
       setLoading(false);
     }
