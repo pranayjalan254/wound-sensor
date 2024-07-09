@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import "./App.css";
-import { storage } from "./config/firebase";
-import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import axios from "axios";
+import "./App.css";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -25,13 +23,12 @@ function App() {
       return;
     }
     setLoading(true);
-    const filesFolderRef = ref(storage, `projectFiles/${selectedFile.name}`);
     const userMessage = { sender: "user", content: "Uploaded an image" };
     setMessages([...messages, userMessage]);
 
     try {
-      await uploadBytes(filesFolderRef, selectedFile);
-      const downloadURL = await getDownloadURL(filesFolderRef);
+      const formData = new FormData();
+      formData.append("image", selectedFile);
 
       const botMessage = {
         sender: "bot",
@@ -39,10 +36,16 @@ function App() {
       };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
 
-      // Send the image URL to the Flask backend
-      const response = await axios.post("http://127.0.0.1:5000/", {
-        imageUrl: downloadURL,
-      });
+      // Send the image file to the Flask backend
+      const response = await axios.post(
+        "http://127.0.0.1:5000/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       const results = response.data;
       const resultMessage = {
