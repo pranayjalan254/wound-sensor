@@ -48,11 +48,28 @@ function App() {
       );
 
       const results = response.data;
+
       const resultMessage = {
         sender: "bot",
-        content: `Wound Area: ${results.areas.join(
-          ", "
-        )} cm²\nScores: ${results.scores.join(", ")}`,
+        content: (
+          <div>
+            <strong>Results:</strong>
+            {results.areas.length > 0 ? (
+              results.areas.map((area, index) => (
+                <div key={index}>
+                  <p>
+                    Object {index + 1} Area: {area.toFixed(2)} cm²
+                  </p>
+                  <p>Class ID: {results.class_ids[index]}</p>
+                  <p>Score: {results.scores[index]}</p>
+                  <hr />
+                </div>
+              ))
+            ) : (
+              <p>No objects detected or ruler not found in the image.</p>
+            )}
+          </div>
+        ),
       };
       setMessages((prevMessages) => [...prevMessages, resultMessage]);
     } catch (error) {
@@ -74,13 +91,25 @@ function App() {
         <div className="chat-container">
           {messages.map((message, index) => (
             <div key={index} className={`chat-message ${message.sender}`}>
-              {message.content}
+              {typeof message.content === "string" ? (
+                <p>{message.content}</p>
+              ) : (
+                message.content // Render JSX content directly
+              )}
             </div>
           ))}
           {loading && <div className="chat-message bot">Loading...</div>}
         </div>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>
+        <form
+          id="upload-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleUpload();
+          }}
+        >
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <button type="submit">Upload</button>
+        </form>
       </header>
     </div>
   );
