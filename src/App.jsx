@@ -36,7 +36,6 @@ function App() {
       };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
 
-      // Send the image file to the Flask backend
       const response = await axios.post(
         "http://127.0.0.1:5000/predict",
         formData,
@@ -61,7 +60,7 @@ function App() {
                     Object {index + 1} Area: {area.toFixed(2)} cm²
                   </p>
                   <p>Class ID: {results.class_ids[index]}</p>
-                  <p>Score: {results.scores[index]}</p>
+                  <p>Score: {results.scores[index].toFixed(2)}</p>
                   <hr />
                 </div>
               ))
@@ -76,7 +75,7 @@ function App() {
       console.error("Error processing the image:", error);
       const errorMessage = {
         sender: "bot",
-        content: "Error processing the image",
+        content: "Error processing the image. Please try again.",
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
@@ -94,7 +93,7 @@ function App() {
               {typeof message.content === "string" ? (
                 <p>{message.content}</p>
               ) : (
-                message.content // Render JSX content directly
+                message.content
               )}
             </div>
           ))}
